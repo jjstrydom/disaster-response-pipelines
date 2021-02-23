@@ -12,11 +12,11 @@ This project uses `python 3.7` and the following packages:
 - flask
 
 ## Dataset
+Dataset is built from `disaster_categories.csv` and `disaster_messages.csv` included in the repo in the `data` folder. 
 
 ## Files
-
-#### LICENSE
-- MIT. Read for information on re-use and sharing. Usage of this software, analysis or anything else in this repository is subject to the license.
-
-#### README.md
-- This file.
+- `app/run.py`: Main program to run the dashboard.
+- `data/process_data.py`: Script that performs ETL on the data.
+- `models/train_classifier.py`: Script that performs model training.
+- `LICENSE`: MIT. Read for information on re-use and sharing. Usage of this software, analysis or anything else in this repository is subject to the license.
+- `README.md`: This file.
