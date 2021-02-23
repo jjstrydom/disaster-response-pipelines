@@ -1,16 +1,42 @@
 import sys
+import pandas as pd
+from sqlalchemy import create_engine
 
 
 def load_data(messages_filepath, categories_filepath):
-    pass
-
+    # load messages dataset
+    messages = pd.read_csv(messages_filepath)
+    # load categories dataset
+    categories = pd.read_csv(categories_filepath)
+    # merge datasets
+    df = pd.merge(messages, categories, left_on="id", right_on="id")
+    # create a dataframe of the 36 individual category columns
+    categories = df.categories.str.split(';', expand=True)
+    # extract a list of new column names for categories.
+    category_colnames = categories.iloc[0].str.split('-', expand=True)[0]
+    # rename the columns of `categories`
+    categories.columns = category_colnames
+    for column in categories:
+        # set each value to be the last character of the string & convert column from string to numeric
+        categories[column] = categories[column].str.split('-', expand=True)[1].astype(int)
+    # drop the original categories column from `df`
+    df.drop(columns=['categories'], inplace=True)
+    # concatenate the original dataframe with the new `categories` dataframe
+    df = pd.merge(df, categories, left_index=True, right_index=True)
+    return df
 
 def clean_data(df):
-    pass
+    # drop duplicates
+    df = df[df.duplicated() == False]
+    # TODO: remove outliers
+    # There is no data on category child_alone - removing for now to reduce requirements on downstream processes
+    df.drop(columns=['child_alone'], inplace=True)
+    return df
 
 
 def save_data(df, database_filename):
-    pass  
+    engine = create_engine(database_filename)
+    df.to_sql('project_data', engine, index=False)
 
 
 def main():
