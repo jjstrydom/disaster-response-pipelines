@@ -30,7 +30,8 @@ def clean_data(df):
     df = df[df.duplicated() == False]
     # TODO: remove outliers
     # There is no data on category child_alone - removing for now to reduce requirements on downstream processes
-    df.drop(columns=['child_alone'], inplace=True)
+    # rubrik asks for all 36 columns :(
+    # df.drop(columns=['child_alone'], inplace=True)
     return df
 
 

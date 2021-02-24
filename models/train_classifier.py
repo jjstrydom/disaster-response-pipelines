@@ -11,6 +11,7 @@ from nltk.tokenize import word_tokenize
 # from nltk.stem import WordNetLemmatizer
 # from nltk.corpus import stopwords
 
+from sklearn.metrics import recall_score, precision_score, f1_score, accuracy_score, roc_auc_score
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import train_test_split
 from sklearn.multioutput import MultiOutputClassifier
@@ -40,11 +41,27 @@ def build_model():
     return pipeline
 
 
+def print_scores(category, precision, recall, f1score, accuracy, AUC):
+    print(f"{category:23}: {precision:9.3f} {recall:9.3f} {f1score:9.3f} {accuracy:9.3f} {AUC:9.3f}")
+
 def evaluate_model(model, X_test, Y_test, category_names):
     y_pred = model.predict(X_test)
-    accuracy = (y_pred == Y_test).mean()
-    print(accuracy)
+    print(f"class                  : precision    recall   f1score  accuracy       AUC")
+    for c in category_names:
+        precision = precision_score(Y_test[c], y_pred[c])
+        recall = recall_score(Y_test[c], y_pred[c])
+        f1score = f1_score(Y_test[c], y_pred[c])
+        accuracy = accuracy_score(Y_test[c], y_pred[c])
+        AUC = roc_auc_score(Y_test[c], y_pred[c])
+        print_scores(c, precision, recall, f1score, accuracy, AUC)
 
+    precision = precision_score(Y_test, y_pred, average='weighted')
+    recall = recall_score(Y_test, y_pred, average='weighted')
+    f1score = f1_score(Y_test, y_pred, average='weighted')
+    accuracy = accuracy_score(Y_test, y_pred)
+    AUC = roc_auc_score(Y_test, y_pred)
+    print(" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -")
+    print_scores('TOTAL', precision, recall, f1score, accuracy, AUC)
 
 def save_model(model, model_filepath):
     # save model to model filepath
