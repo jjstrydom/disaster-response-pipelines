@@ -1,24 +1,54 @@
 import sys
+from sqlalchemy import create_engine
+import pandas as pd
+import joblib
 
+import nltk
+# nltk.download('punkt')
+# nltk.download('wordnet')
+# nltk.download('stopwords')
+from nltk.tokenize import word_tokenize
+# from nltk.stem import WordNetLemmatizer
+# from nltk.corpus import stopwords
+
+from sklearn.pipeline import Pipeline
+from sklearn.model_selection import train_test_split
+from sklearn.multioutput import MultiOutputClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 
 def load_data(database_filepath):
-    pass
-
+    # load data from database
+    engine = create_engine(database_filepath)
+    df = pd.read_sql_table('project_data', con=engine)
+    X = df['message']
+    Y = df[df.columns[-36:]]
+    return X, Y, Y.columns
 
 def tokenize(text):
-    pass
+    # process text data to tokens
+    tokens = word_tokenize(text)
+    return tokens
 
 
 def build_model():
-    pass
+    pipeline = Pipeline([
+        ('vect', CountVectorizer(tokenizer=tokenize)),
+        ('tfidf', TfidfTransformer()),
+        ('clf', MultiOutputClassifier(RandomForestClassifier()))
+    ])
+    return pipeline
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
-    pass
+    y_pred = model.predict(X_test)
+    accuracy = (y_pred == Y_test).mean()
+    print(accuracy)
 
 
 def save_model(model, model_filepath):
-    pass
+    # save model to model filepath
+    joblib.dump(model, model_filepath)
 
 
 def main():
