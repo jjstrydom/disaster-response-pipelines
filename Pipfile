@@ -12,6 +12,7 @@ nltk = "*"
 sklearn = "*"
 flask = "*"
 joblib = "*"
+plotly = "*"
 
 [requires]
 python_version = "3.7"
