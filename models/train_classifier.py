@@ -5,11 +5,11 @@ import joblib
 
 import nltk
 # nltk.download('punkt')
-# nltk.download('wordnet')
-# nltk.download('stopwords')
+nltk.download('wordnet')
+nltk.download('stopwords')
 from nltk.tokenize import word_tokenize
-# from nltk.stem import WordNetLemmatizer
-# from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
+from nltk.corpus import stopwords
 
 from sklearn.metrics import recall_score, precision_score, f1_score, accuracy_score, roc_auc_score
 from sklearn.pipeline import Pipeline
@@ -17,6 +17,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.multioutput import MultiOutputClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
+from sklearn.model_selection import GridSearchCV
+
 
 def load_data(database_filepath):
     # load data from database
@@ -29,7 +31,14 @@ def load_data(database_filepath):
 def tokenize(text):
     # process text data to tokens
     tokens = word_tokenize(text)
-    return tokens
+    words = [w for w in tokens if w not in stopwords.words("english")]
+    lemmatizer = WordNetLemmatizer()
+
+    clean_tokens = []
+    for tok in words:
+        clean_tok = lemmatizer.lemmatize(tok).lower().strip()
+        clean_tokens.append(clean_tok)
+    return clean_tokens
 
 
 def build_model():
@@ -41,8 +50,20 @@ def build_model():
     return pipeline
 
 
+def grid_search(X_train, y_train, pipeline, parameters):
+    # parameters = {
+    #     'clf__estimator__n_estimators': [10, 100],
+    #     'clf__estimator__min_samples_split': [2, 10],
+    #     'clf__estimator__min_samples_leaf': [1, 5],
+    # }
+    cv = GridSearchCV(pipeline, param_grid=parameters)
+    res = cv.fit(X_train, y_train)
+    return res
+
+
 def print_scores(category, precision, recall, f1score, accuracy, AUC):
     print(f"{category:23}: {precision:9.3f} {recall:9.3f} {f1score:9.3f} {accuracy:9.3f} {AUC:9.3f}")
+
 
 def evaluate_model(model, X_test, Y_test, category_names):
     y_pred = model.predict(X_test)
@@ -62,6 +83,7 @@ def evaluate_model(model, X_test, Y_test, category_names):
     AUC = roc_auc_score(Y_test, y_pred)
     print(" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -")
     print_scores('TOTAL', precision, recall, f1score, accuracy, AUC)
+
 
 def save_model(model, model_filepath):
     # save model to model filepath
