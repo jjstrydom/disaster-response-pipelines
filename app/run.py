@@ -38,34 +38,70 @@ model = joblib.load("../models/classifier.pkl")
 @app.route('/')
 @app.route('/index')
 def index():
-    
-    # extract data needed for visuals
-    # TODO: Below is an example - modify to extract data for your own visuals
-    genre_counts = df.groupby('genre').count()['message']
-    genre_names = list(genre_counts.index)
-    
-    # create visuals
-    # TODO: Below is an example - modify to create your own visuals
-    graphs = [
-        {
-            'data': [
-                Bar(
-                    x=genre_names,
-                    y=genre_counts
-                )
-            ],
 
-            'layout': {
-                'title': 'Distribution of Message Genres',
-                'yaxis': {
-                    'title': "Count"
-                },
-                'xaxis': {
-                    'title': "Genre"
+    category_names = df.columns[4:]
+    category_counts = df[category_names].sum()
+
+    label_distribution = df[category_names].sum(axis=1).value_counts().sort_index()
+
+    message_length_distibution = df['message'].str.len().round(-2).value_counts().sort_index()
+
+    graphs = [
+            {
+                'data': [
+                    Bar(
+                        x=category_names,
+                        y=category_counts
+                    )
+                ],
+
+                'layout': {
+                    'title': 'Distribution of Categories',
+                    'yaxis': {
+                        'title': "Count"
+                    },
+                    'xaxis': {
+                        'title': "Classes"
+                    }
+                }
+            },
+            {
+                'data': [
+                    Bar(
+                        x=label_distribution.index,
+                        y=label_distribution.values
+                    )
+                ],
+
+                'layout': {
+                    'title': 'Distribution of number of labels per message',
+                    'yaxis': {
+                        'title': "Number of messages"
+                    },
+                    'xaxis': {
+                        'title': "Number of labels"
+                    }
+                }
+            },
+            {
+                'data': [
+                    Bar(
+                        x=message_length_distibution.index,
+                        y=message_length_distibution.values
+                    )
+                ],
+
+                'layout': {
+                    'title': 'Distribution of message length',
+                    'yaxis': {
+                        'title': "Number of messages"
+                    },
+                    'xaxis': {
+                        'title': "Length of message"
+                    }
                 }
             }
-        }
-    ]
+        ]
     
     # encode plotly graphs in JSON
     ids = ["graph-{}".format(i) for i, _ in enumerate(graphs)]
