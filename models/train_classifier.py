@@ -6,14 +6,12 @@ import joblib
 
 import nltk
 import ssl
-
 try:
     _create_unverified_https_context = ssl._create_unverified_context
 except AttributeError:
     pass
 else:
     ssl._create_default_https_context = _create_unverified_https_context
-
 nltk.download('punkt')
 nltk.download('wordnet')
 nltk.download('stopwords')
@@ -48,6 +46,7 @@ def load_data(database_filepath):
     T = Y.columns
     return X, Y, T
 
+
 def tokenize(text):
     """
     Take a piece of text and perform NLP (Natural Language Processing) steps. The function tokenizes the message text,
@@ -73,12 +72,11 @@ def build_model():
     using a random forest classifier.
     :return: a sklearn pipeline object
     """
-    # n_cores = psutil.cpu_count()
+    n_cores = psutil.cpu_count()
     pipeline = Pipeline([
         ('vect', CountVectorizer(tokenizer=tokenize)),
         ('tfidf', TfidfTransformer()),
-        # ('clf', MultiOutputClassifier(RandomForestClassifier(n_jobs=n_cores)))
-        ('clf', MultiOutputClassifier(RandomForestClassifier()))
+        ('clf', MultiOutputClassifier(RandomForestClassifier(),n_jobs=n_cores))
     ])
     return pipeline
 
