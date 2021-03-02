@@ -4,6 +4,12 @@ from sqlalchemy import create_engine
 
 
 def load_data(messages_filepath, categories_filepath):
+    """
+    Loads the data from csv files containing the messages and the target categories.
+    :param messages_filepath: file path string to the messages csv file
+    :param categories_filepath: file path string to the categories csv file
+    :return: dataframe containing the messages and the categories
+    """
     # load messages dataset
     messages = pd.read_csv(messages_filepath)
     # load categories dataset
@@ -26,16 +32,27 @@ def load_data(messages_filepath, categories_filepath):
     return df
 
 def clean_data(df):
+    """
+    Takes a dataframe and cleans the data by removing duplicate entries.
+    :param df: pandas dataframe containing the data to clean
+    :return: pandas dataframe with duplicates removed
+    """
     # drop duplicates
     df = df[df.duplicated() == False]
     # TODO: remove outliers
     # There is no data on category child_alone - removing for now to reduce requirements on downstream processes
-    # rubrik asks for all 36 columns :(
+    # update: rubrik asks for all 36 columns which is silly :(
     # df.drop(columns=['child_alone'], inplace=True)
     return df
 
 
 def save_data(df, database_filename):
+    """
+    Saves the data to disk at the specified filepath.
+    :param df: pandas dataframe containing the data to save
+    :param database_filename: filepath & name string to save the data to
+    :return: None (data saved to disk)
+    """
     engine = create_engine(database_filename)
     df.to_sql('project_data', engine, index=False)
 
