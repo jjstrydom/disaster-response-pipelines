@@ -6,6 +6,7 @@ import joblib
 
 import nltk
 import ssl
+# dealing with certificate issues when trying to download using nltk
 try:
     _create_unverified_https_context = ssl._create_unverified_context
 except AttributeError:
@@ -72,24 +73,26 @@ def build_model():
     using a random forest classifier.
     :return: a sklearn pipeline object
     """
-    n_cores = psutil.cpu_count()
     pipeline = Pipeline([
         ('vect', CountVectorizer(tokenizer=tokenize)),
         ('tfidf', TfidfTransformer()),
-        ('clf', MultiOutputClassifier(RandomForestClassifier(),n_jobs=n_cores))
+        ('clf', MultiOutputClassifier(RandomForestClassifier(n_jobs=psutil.cpu_count()), n_jobs=psutil.cpu_count()))
     ])
     return pipeline
 
 
-def grid_search(X_train, y_train, pipeline, parameters):
-    # parameters = {
-    #     'clf__estimator__n_estimators': [10, 100],
-    #     'clf__estimator__min_samples_split': [2, 10],
-    #     'clf__estimator__min_samples_leaf': [1, 5],
-    # }
+def grid_search(pipeline):
+    parameters = {
+        'clf__estimator__n_estimators': [100, 1000],
+        'clf__estimator__criterion': ['gini', 'entropy'],
+        'clf__estimator__max_depth': [None, 500],
+        'clf__estimator__max_leaf_nodes': [None, 250],
+        'clf__estimator__class_weight': [None, 'balanced', 'balanced_subsample']
+    }
     cv = GridSearchCV(pipeline, param_grid=parameters)
-    res = cv.fit(X_train, y_train)
-    return res
+    return cv
+    # res = cv.fit(X_train, y_train)
+    # return res
 
 
 def print_scores(category, precision, recall, f1score, accuracy, AUC):
@@ -158,12 +161,17 @@ def main():
         print('Loading data...\n    DATABASE: {}'.format(database_filepath))
         X, Y, category_names = load_data(database_filepath)
         X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2)
-        
+
         print('Building model...')
         model = build_model()
-        
+
+        print('Building grid search over model parameters...')
+        grid = grid_search(model)
+
         print('Training model...')
-        model.fit(X_train, Y_train)
+        grid.fit(X_train, Y_train)
+        # model.fit(X_train, Y_train)
+        print(grid.best_params_)
         
         print('Evaluating model...')
         evaluate_model(model, X_test, Y_test, category_names)
