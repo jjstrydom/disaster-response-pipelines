@@ -33,13 +33,17 @@ def load_data(messages_filepath, categories_filepath):
 
 def clean_data(df):
     """
-    Takes a dataframe and cleans the data by removing duplicate entries.
+    Takes a dataframe and cleans the data.
     :param df: pandas dataframe containing the data to clean
-    :return: pandas dataframe with duplicates removed
+    :return: pandas dataframe with cleaned data
     """
     # drop duplicates
     df = df[df.duplicated() == False]
-    # TODO: remove outliers
+    # force related category to be bi-variate
+    df.loc[df['related']==2,'related'] = 1
+    # remove outlier rows where there are more than 15 labels on a message
+    # df.drop(df[df.columns[4:]].sum(axis=1) >= 16, inplace=True)
+
     # There is no data on category child_alone - removing for now to reduce requirements on downstream processes
     # update: rubrik asks for all 36 columns which is silly :(
     # df.drop(columns=['child_alone'], inplace=True)
