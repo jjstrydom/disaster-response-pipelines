@@ -21,14 +21,30 @@ from sklearn.model_selection import GridSearchCV
 
 
 def load_data(database_filepath):
+    """
+    Load the dataset from the local database specified by the database filepath and return the messages as well as their
+    targets and target names.
+    :param database_filepath: path string to database file location
+    :return: tuple of length 3 (X, Y, T) containing
+             X = messages,
+             Y = targets,
+             T = target names
+    """
     # load data from database
     engine = create_engine(database_filepath)
     df = pd.read_sql_table('project_data', con=engine)
     X = df['message']
     Y = df[df.columns[-36:]]
-    return X, Y, Y.columns
+    T = Y.columns
+    return X, Y, T
 
 def tokenize(text):
+    """
+    Take a piece of text and perform NLP (Natural Language Processing) steps. The function tokenizes the message text,
+    removes the stopwords, performs lemmatization, and converts the tokens to lowercase.
+    :param text: a string of text to process
+    :return: list containing clean tokes (strings) generated from the text
+    """
     # process text data to tokens
     tokens = word_tokenize(text)
     words = [w for w in tokens if w not in stopwords.words("english")]
@@ -42,6 +58,11 @@ def tokenize(text):
 
 
 def build_model():
+    """
+    Construct the sklearn pipeline that vectorizes input messages, performs TF-IDF, and multi output classification
+    using a random forest classifier.
+    :return: a sklearn pipeline object
+    """
     pipeline = Pipeline([
         ('vect', CountVectorizer(tokenizer=tokenize)),
         ('tfidf', TfidfTransformer()),
@@ -62,10 +83,29 @@ def grid_search(X_train, y_train, pipeline, parameters):
 
 
 def print_scores(category, precision, recall, f1score, accuracy, AUC):
+    """
+    Print the scores nicely formatted so that consecutive prints using this function results in a table structure on
+    screen.
+    :param category: name of category as a string
+    :param precision: precision metric as a float
+    :param recall: recall metric as a float
+    :param f1score: f1score metric as a float
+    :param accuracy: accuracy metric as a float
+    :param AUC: AUC metric as a float
+    :return: None (prints to screen)
+    """
     print(f"{category:23}: {precision:9.3f} {recall:9.3f} {f1score:9.3f} {accuracy:9.3f} {AUC:9.3f}")
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
+    """
+    Evaluate the performance of the model for each category and print it to screen.
+    :param model: the trained model to evaluate
+    :param X_test: Test messages
+    :param Y_test: Test targets
+    :param category_names: Category names of the targets present in the data.
+    :return: None (prints to screen)
+    """
     y_pred = model.predict(X_test)
     print(f"class                  : precision    recall   f1score  accuracy       AUC")
     for c in category_names:
@@ -86,6 +126,12 @@ def evaluate_model(model, X_test, Y_test, category_names):
 
 
 def save_model(model, model_filepath):
+    """
+    Saves the model to disk.
+    :param model: the trained model to save
+    :param model_filepath: filepath to save to
+    :return: None
+    """
     # save model to model filepath
     joblib.dump(model, model_filepath)
 
