@@ -25,3 +25,16 @@ Dataset is built from `disaster_categories.csv` and `disaster_messages.csv` incl
 - `models/train_classifier.py`: Script that performs model training.
 - `LICENSE`: MIT. Read for information on re-use and sharing. Usage of this software, analysis or anything else in this repository is subject to the license.
 - `README.md`: This file.
+
+## How to run
+### Process data
+Browse to the `/data` folder and execute:
+`python process_data.py disaster_messages.csv disaster_categories.csv DisasterResponse.db`
+### Train classifier
+Browse to the `/models` folder and execute
+`python train_classifier.py ../data/DisasterResponse.db classifier.pkl`
+### Run Dashboard
+Browse to the `/app` folder and execute
+`python run.py`
+
+
