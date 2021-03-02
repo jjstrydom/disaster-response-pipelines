@@ -13,6 +13,7 @@ sklearn = "*"
 flask = "*"
 joblib = "*"
 plotly = "*"
+psutil = "*"
 
 [requires]
 python_version = "3.7"

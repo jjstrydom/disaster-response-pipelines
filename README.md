@@ -10,6 +10,11 @@ This project uses `python 3.7` and the following packages:
 - nltk
 - sklearn
 - flask
+- joblib
+- plotly
+- psutil
+
+For the most up to date information see Pipfile in the root folder.
 
 ## Dataset
 Dataset is built from `disaster_categories.csv` and `disaster_messages.csv` included in the repo in the `data` folder. 
