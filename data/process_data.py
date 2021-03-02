@@ -53,7 +53,7 @@ def save_data(df, database_filename):
     :param database_filename: filepath & name string to save the data to
     :return: None (data saved to disk)
     """
-    engine = create_engine(database_filename)
+    engine = create_engine(f"sqlite:///{database_filename}")
     df.to_sql('project_data', engine, index=False)
 
 
