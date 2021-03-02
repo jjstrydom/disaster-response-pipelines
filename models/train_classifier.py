@@ -116,21 +116,27 @@ def evaluate_model(model, X_test, Y_test, category_names):
     :param category_names: Category names of the targets present in the data.
     :return: None (prints to screen)
     """
-    y_pred = model.predict(X_test)
+    y_pred_raw = model.predict(X_test)
+    y_pred = pd.DataFrame(y_pred_raw, columns=category_names)
     print(f"class                  : precision    recall   f1score  accuracy       AUC")
     for c in category_names:
-        precision = precision_score(Y_test[c], y_pred[c])
-        recall = recall_score(Y_test[c], y_pred[c])
-        f1score = f1_score(Y_test[c], y_pred[c])
+        precision = precision_score(Y_test[c], y_pred[c], zero_division=0)
+        recall = recall_score(Y_test[c], y_pred[c], zero_division=0)
+        f1score = f1_score(Y_test[c], y_pred[c], zero_division=0)
         accuracy = accuracy_score(Y_test[c], y_pred[c])
-        AUC = roc_auc_score(Y_test[c], y_pred[c])
+        try:
+            AUC = roc_auc_score(Y_test[c], y_pred[c])
+        except ValueError:
+            AUC = float('nan')
         print_scores(c, precision, recall, f1score, accuracy, AUC)
 
-    precision = precision_score(Y_test, y_pred, average='weighted')
-    recall = recall_score(Y_test, y_pred, average='weighted')
-    f1score = f1_score(Y_test, y_pred, average='weighted')
+    precision = precision_score(Y_test, y_pred, average='weighted', zero_division=0)
+    recall = recall_score(Y_test, y_pred, average='weighted', zero_division=0)
+    f1score = f1_score(Y_test, y_pred, average='weighted', zero_division=0)
     accuracy = accuracy_score(Y_test, y_pred)
-    AUC = roc_auc_score(Y_test, y_pred)
+    # remove columns that are made up of only 1 class so we can calculate a valid AUC
+    valid_cols = [c for c in Y_test.columns if len(Y_test[c].unique()) == 2]
+    AUC = roc_auc_score(Y_test[valid_cols], y_pred[valid_cols])
     print(" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -")
     print_scores('TOTAL', precision, recall, f1score, accuracy, AUC)
 
