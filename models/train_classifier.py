@@ -1,10 +1,20 @@
 import sys
+import psutil
 from sqlalchemy import create_engine
 import pandas as pd
 import joblib
 
 import nltk
-# nltk.download('punkt')
+import ssl
+
+try:
+    _create_unverified_https_context = ssl._create_unverified_context
+except AttributeError:
+    pass
+else:
+    ssl._create_default_https_context = _create_unverified_https_context
+
+nltk.download('punkt')
 nltk.download('wordnet')
 nltk.download('stopwords')
 from nltk.tokenize import word_tokenize
@@ -31,7 +41,7 @@ def load_data(database_filepath):
              T = target names
     """
     # load data from database
-    engine = create_engine(database_filepath)
+    engine = create_engine(f"sqlite:///{database_filepath}")
     df = pd.read_sql_table('project_data', con=engine)
     X = df['message']
     Y = df[df.columns[-36:]]
@@ -63,9 +73,11 @@ def build_model():
     using a random forest classifier.
     :return: a sklearn pipeline object
     """
+    # n_cores = psutil.cpu_count()
     pipeline = Pipeline([
         ('vect', CountVectorizer(tokenizer=tokenize)),
         ('tfidf', TfidfTransformer()),
+        # ('clf', MultiOutputClassifier(RandomForestClassifier(n_jobs=n_cores)))
         ('clf', MultiOutputClassifier(RandomForestClassifier()))
     ])
     return pipeline
