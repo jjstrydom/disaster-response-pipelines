@@ -28,13 +28,16 @@ Dataset is built from `disaster_categories.csv` and `disaster_messages.csv` incl
 
 ## How to run
 ### Process data
-Browse to the `/data` folder and execute:
+Navigate to the `/data` folder and execute
 `python process_data.py disaster_messages.csv disaster_categories.csv DisasterResponse.db`
 ### Train classifier
-Browse to the `/models` folder and execute
+Navigate to the `/models` folder and execute
 `python train_classifier.py ../data/DisasterResponse.db classifier.pkl`
-### Run Dashboard
-Browse to the `/app` folder and execute
-`python run.py`
+### View dashboard
+Navigate to the `/app` folder and execute
+`python run.py`. 
+In the terminal the script will print the host address of the dashboard 
+(typically [`http://0.0.0.0:3001/`](http://0.0.0.0:3001/) when running locally). 
+Open this address in your browser to view the dashboard.
 
 
