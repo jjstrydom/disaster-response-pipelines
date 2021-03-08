@@ -84,10 +84,8 @@ def build_model():
 def grid_search(pipeline):
     parameters = {
         'clf__estimator__n_estimators': [100, 1000],
-        'clf__estimator__criterion': ['gini', 'entropy'],
-        'clf__estimator__max_depth': [None, 500],
-        'clf__estimator__max_leaf_nodes': [None, 250],
-        'clf__estimator__class_weight': [None, 'balanced', 'balanced_subsample']
+    #    'clf__estimator__criterion': ['gini', 'entropy'],
+    #     'clf__estimator__class_weight': [None, 'balanced', 'balanced_subsample']
     }
     cv = GridSearchCV(pipeline, param_grid=parameters)
     return cv
@@ -170,14 +168,16 @@ def main():
 
         print('Training model...')
         grid.fit(X_train, Y_train)
-        # model.fit(X_train, Y_train)
         print(grid.best_params_)
+
+        # print('Training model...')
+        # grid.fit(X_train, Y_train)
         
         print('Evaluating model...')
-        evaluate_model(model, X_test, Y_test, category_names)
+        evaluate_model(grid, X_test, Y_test, category_names)
 
         print('Saving model...\n    MODEL: {}'.format(model_filepath))
-        save_model(model, model_filepath)
+        save_model(grid, model_filepath)
 
         print('Trained model saved!')
 
