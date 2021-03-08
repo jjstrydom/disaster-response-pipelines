@@ -1,4 +1,11 @@
 # disaster-response-pipelines
+
+Using labelled message data from real life disasters to aid in disaster response by classifying unseen messages to the corresponding disaster response team.
+Typically there are multiple independent teams each tackling a different task of a disaster response.
+There are thousands of messages sent during a disaster, with some containing critical information relevant to a specific disaster response team. 
+To manually filter and assign these messages would be too intensive, time consuming, and slow for the overall response effort.
+The disaster response piple aims to take the messages and automatically assign them to the correct disaster response team.
+
 A project to showcase the use of github, ETL, ML, and deployment using python.
 
 ## Environment
