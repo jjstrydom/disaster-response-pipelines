@@ -88,3 +88,6 @@ Open this address in your browser to view the dashboard.
 | other_weather          |  0.556    | 0.019     | 0.036     | 0.949     |  0.509    |
 | direct_report          |  0.808    | 0.355     | 0.493     | 0.856     |  0.667    |
 | **OVERALL**            | **0.762** | **0.531** | **0.568** | **0.256** | **0.589** |
+
+# Development methodology
+Project development takes place on the `develop` branch. Stable versions are merged into the `main` branch from the `develop` branch. 
