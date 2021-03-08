@@ -96,4 +96,7 @@ Open this address in your browser to view the dashboard.
 | **OVERALL**            | **0.762** | **0.531** | **0.568** | **0.256** | **0.589** |
 
 # Development methodology
-Project development takes place on the `develop` branch. Stable versions are merged into the `main` branch from the `develop` branch. 
+Project development takes place on the `develop` branch. Stable versions are merged into the `main` branch from the `develop` branch.
+
+# Contact
+https://github.com/jjstrydom
