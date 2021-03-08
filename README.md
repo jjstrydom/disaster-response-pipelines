@@ -34,6 +34,12 @@ Dataset is built from `disaster_categories.csv` and `disaster_messages.csv` incl
 - `README.md`: This file.
 
 ## How to run
+
+Run the following scripts in order.
+The first script processes the data and saves it to an SQL lite database. 
+The second script uses the data in the database to train a classifier.
+The third script uses the database and the trained model to visualise the data and classify messages entered through a web app. 
+
 ### Process data
 Navigate to the `/data` folder and execute
 `python process_data.py disaster_messages.csv disaster_categories.csv DisasterResponse.db`
